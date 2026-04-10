@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🦋 我是哪种濒危货？</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --primary: #2D5A3D;
+      --primary-dark: #1A3A25;
+      --secondary: #4A7C59;
+      --accent: #E85D4C;
+      --bg: #F5F0E8;
+      --text: #2C2C2C;
+      --card: #FFFFFF;
+      --border: #E0DCD4;
+    }
+
+    body {
+      font-family: 'Noto Sans SC', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 480px;
+      width: 100%;
+    }
+
+    /* 封面页 */
+    .cover-page {
+      text-align: center;
+      padding: 60px 20px;
+      animation: fadeIn 0.6s ease-out;
+    }
+
+    .cover-emoji {
+      font-size: 80px;
+      margin-bottom: 20px;
+    }
+
+    .cover-title {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 12px;
+      line-height: 1.4;
+    }
+
+    .cover-subtitle {
+      font-size: 16px;
+      color: #666;
+      margin-bottom: 8px;
+      line-height: 1.6;
+    }
+
+    .cover-source {
+      font-size: 12px;
+      color: #999;
+      margin-bottom: 40px;
+    }
+
+    .start-btn {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white;
+      border: none;
+      padding: 16px 48px;
+      font-size: 18px;
+      font-weight: 500;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 4px 15px rgba(45, 90, 61, 0.3);
+    }
+
+    .start-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(45, 90, 61, 0.4);
+    }
+
+    .start-btn:active {
+      transform: translateY(0);
+    }
+
+    /* 题目页 */
+    .quiz-page {
+      display: none;
+      animation: slideIn 0.4s ease-out;
+    }
+
+    .progress-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      background: var(--card);
+      padding: 12px 20px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      z-index: 100;
+    }
+
+    .progress-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      max-width: 480px;
+      margin: 0 auto;
+      font-size: 14px;
+      color: #666;
+    }
+
+    .progress-track {
+      height: 6px;
+      background: var(--border);
+      border-radius: 3px;
+      margin-top: 8px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+      border-radius: 3px;
+      transition: width 0.3s ease;
+    }
+
+    .quiz-content {
+      padding: 80px 0 40px;
+    }
+
+    .question-text {
+      font-size: 20px;
+      font-weight: 500;
+      color: var(--text);
+      margin-bottom: 24px;
+      line-height: 1.6;
+    }
+
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .option {
+      background: var(--card);
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      padding: 16px 20px;
+      font-size: 15px;
+      line-height: 1.5;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-align: left;
+    }
+
+    .option:hover {
+      border-color: var(--secondary);
+      transform: scale(1.02);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+
+    .option:active {
+      transform: scale(0.98);
+    }
+
+    /* 结果页 */
+    .result-page {
+      display: none;
+      text-align: center;
+      padding: 40px 0;
+      animation: fadeIn 0.6s ease-out;
+    }
+
+    .result-animal {
+      font-size: 100px;
+      margin-bottom: 16px;
+      animation: bounceIn 0.6s ease-out;
+    }
+
+    .result-type {
+      display: inline-block;
+      background: var(--primary);
+      color: white;
+      padding: 6px 20px;
+      border-radius: 20px;
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      margin-bottom: 16px;
+    }
+
+    .result-name {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 8px;
+    }
+
+    .result-alias {
+      font-size: 14px;
+      color: #888;
+      margin-bottom: 24px;
+    }
+
+    .result-card {
+      background: var(--card);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 16px;
+      text-align: left;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    }
+
+    .result-card-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--accent);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .result-card-content {
+      font-size: 15px;
+      line-height: 1.7;
+      color: #444;
+    }
+
+    .result-quote {
+      background: linear-gradient(135deg, #f8f8f8, #f0f0f0);
+      border-left: 4px solid var(--primary);
+      padding: 16px 20px;
+      margin-top: 16px;
+      font-style: italic;
+      color: #555;
+    }
+
+    .result-quote::before {
+      content: '"';
+      font-size: 24px;
+      color: var(--primary);
+    }
+
+    .result-quote::after {
+      content: '"';
+      font-size: 24px;
+      color: var(--primary);
+    }
+
+    . endangered-info {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .endangered-item {
+      background: #f8f8f8;
+      padding: 12px;
+      border-radius: 8px;
+      text-align: center;
+    }
+
+    .endangered-label {
+      font-size: 12px;
+      color: #888;
+    }
+
+    .endangered-value {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    .share-section {
+      margin-top: 24px;
+    }
+
+    .share-btn {
+      background: linear-gradient(135deg, var(--accent), #d44a3a);
+      color: white;
+      border: none;
+      padding: 14px 32px;
+      font-size: 16px;
+      font-weight: 500;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 4px 15px rgba(232, 93, 76, 0.3);
+    }
+
+    .share-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(232, 93, 76, 0.4);
+    }
+
+    .retry-btn {
+      background: transparent;
+      color: var(--primary);
+      border: 2px solid var(--primary);
+      padding: 12px 28px;
+      font-size: 15px;
+      border-radius: 50px;
+      cursor: pointer;
+      margin-top: 12px;
+      transition: all 0.2s;
+    }
+
+    .retry-btn:hover {
+      background: var(--primary);
+      color: white;
+    }
+
+    .footer {
+      margin-top: 40px;
+      font-size: 12px;
+      color: #999;
+    }
+
+    /* 动画 */
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateX(20px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    @keyframes bounceIn {
+      0% { transform: scale(0.3); opacity: 0; }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 80px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--text);
+      color: white;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-size: 14px;
+      opacity: 0;
+      transition: opacity 0.3s;
+      z-index: 200;
+    }
+
+    .toast.show {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- 封面页 -->
+    <div class="cover-page" id="coverPage">
+      <div class="cover-emoji">🦋</div>
+      <h1 class="cover-title">🦋 我是哪种濒危货？</h1>
+      <p class="cover-subtitle">濒危动物版性格测试<br>15道题测出你的"濒危货"人格</p>
+      <p class="cover-source">数据来源：IUCN Red List 2025-2</p>
+      <button class="start-btn" onclick="startQuiz()">开始测试 →</button>
+    </div>
+
+    <!-- 题目页 -->
+    <div class="quiz-page" id="quizPage">
+      <div class="progress-bar">
+        <div class="progress-info">
+          <span id="progressText">Q1/15</span>
+          <span id="progressPercent">7%</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" id="progressFill" style="width: 7%"></div>
+        </div>
+      </div>
+      <div class="quiz-content">
+        <p class="question-text" id="questionText"></p>
+        <div class="options" id="optionsContainer"></div>
+      </div>
+    </div>
+
+    <!-- 结果页 -->
+    <div class="result-page" id="resultPage">
+      <div class="result-animal" id="resultAnimal"></div>
+      <div class="result-type" id="resultType"></div>
+      <p class="result-name" id="resultName"></p>
+      <p class="result-alias" id="resultAlias"></p>
+      
+      <div class="result-card">
+        <div class="result-card-title">📚 习性小知识</div>
+        <div class="result-card-content" id="resultKnowledge"></div>
+      </div>
+
+      <div class="result-card">
+        <div class="result-card-title">🤔 为什么是你</div>
+        <div class="result-card-content" id="resultDescription"></div>
+        <div class="result-quote" id="resultQuote"></div>
+      </div>
+
+      <div class="result-card">
+        <div class="result-card-title">🔴 IUCN濒危数据</div>
+        <div class="endangered-info">
+          <div class="endangered-item">
+            <div class="endangered-label">IUCN等级</div>
+            <div class="endangered-value" id="iucnLevel"></div>
+          </div>
+          <div class="endangered-item">
+            <div class="endangered-label">全球数量</div>
+            <div class="endangered-value" id="iucnCount"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="share-section">
+        <button class="share-btn" onclick="shareResult()">📤 分享结果</button><br>
+        <button class="retry-btn" onclick="retryQuiz()">🔄 再测一次</button>
+      </div>
+
+      <div class="footer">
+        <p>🦋 我是哪种濒危货？</p>
+        <p>数据来源：IUCN Red List 2025-2</p>
+        <p>制作：Robin · 玩出名堂</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast">已复制到剪贴板！</div>
+
+  <script>
+    // 题目数据
+    const questions = [
+      {
+        q: "朋友叫你去KTV，你的心理活动是？",
+        options: [
+          "假装没看见，等他们再叫一次我就去",
+          "到那后发现全是i人，社恐发作想钻地缝",
+          "已经在网上约好了一个，但实际不想出门",
+          "去，必须去，但我只负责坐着吃果盘"
+        ]
+      },
+      {
+        q: "你在电梯里放了一个屁，你会？",
+        options: [
+          "表情管理，当无事发生",
+          "大声说"谁放屁了"，掌握舆论主动权",
+          "假装看手机，希望有人觉得是手机味的",
+          "下意识憋气，等门开了猛吸一口新鲜空气"
+        ]
+      },
+      {
+        q: "你的领导在周末发了一条工作消息，你会？",
+        options: [
+          "看到了，回了，但心里骂了一万句",
+          "故意等两小时再回，显得我很忙",
+          "当没看到，周一再说"不好意思信号不好"",
+          "秒回，然后后悔了一整个周末"
+        ]
+      },
+      {
+        q: "你的朋友找你倾诉感情问题，你会？",
+        options: [
+          "听完分析利弊，给出最优解",
+          "听完立刻开始讲自己的狗血感情史",
+          "表面"嗯嗯"，实际在回别人微信",
+          "认真听，听完发现她只是想吐槽，并不想听建议"
+        ]
+      },
+      {
+        q: "你看到一个博主说"月入十万很简单"，你的反应是？",
+        options: [
+          "关注了，收藏了，然后什么也没做",
+          "激情转发，配文"下一个就是我"",
+          "划走，但我知道这肯定能骗到人",
+          "认真看完，思考了一下，然后什么也没做"
+        ]
+      },
+      {
+        q: "你觉得自己在朋友眼里是什么形象？",
+        options: [
+          "那个靠谱的，有事可以找ta",
+          "那个搞笑的，负责活跃气氛",
+          "那个有钱的，虽然我不知道ta哪来的钱",
+          "那个神秘的，ta到底在干嘛没人知道"
+        ]
+      },
+      {
+        q: "你在小红书发了一张自拍，你希望别人怎么评论？",
+        options: [
+          ""求原图" "怎么拍的" ——说明拍得好",
+          "不需要评论，赞够多就行",
+          ""你本人比照片好看" ——说明本人更有魅力",
+          ""这个滤镜是什么" ——说明氛围感到位了"
+        ]
+      },
+      {
+        q: "你喜欢的人给你发消息说"在吗"，你会？",
+        options: [
+          "立刻回，但要先装作不在线过一会再回",
+          "等五分钟再回，显得我很忙",
+          "看到立刻回，但回完就开始后悔是不是太热情了",
+          "不回，等ta再发一条"
+        ]
+      },
+      {
+        q: "你的外卖被偷了，你的反应是？",
+        options: [
+          "自认倒霉，再点一单，怀疑是同事偷的",
+          "站在外卖柜前面发出尖锐的爆鸣声",
+          "默默重新点一份，不想让任何人知道我的外卖被偷了",
+          "查监控，一定要找到凶手"
+        ]
+      },
+      {
+        q: "你在地铁上看到一个很帅/很漂亮的人，你会？",
+        options: [
+          "偷拍一张，回去发朋友圈"今天运气不错"",
+          "不敢看，但一直在用余光扫描",
+          "立刻想逃，社交压力让我窒息",
+          "觉得也就那样，还没有我十分之一"
+        ]
+      },
+      {
+        q: "周一早上闹钟响了，你的状态是？",
+        options: [
+          "身体已经坐起来了，但灵魂还在床上",
+          "已经在刷手机了，但没有要起床的意思",
+          "再次睡过去了，再睡五分钟就五分钟",
+          "精神抖擞，不愧是我，自律的人最可怕"
+        ]
+      },
+      {
+        q: "你做了一件很牛的事被领导当众表扬了，你会？",
+        options: [
+          "表面谦虚"没有没有"，实际已经在想象年终奖翻倍",
+          "希望有人现在立刻请我吃饭庆祝",
+          "尴尬到想钻地缝，公开表扬是对i人的极刑",
+          "觉得还不够牛，等下一次更大的舞台"
+        ]
+      },
+      {
+        q: "你加入了一个新公司，你的第一顿饭？",
+        options: [
+          "和新同事一起吃，迅速融入集体",
+          "一个人吃，不想表现得太卷",
+          "等别人来邀请我，显示我的矜持",
+          "叫外卖，在工位上吃，不想被打扰"
+        ]
+      },
+      {
+        q: "你的手机只剩1%的电，你会？",
+        options: [
+          "产生电量焦虑，开启省电模式不敢动",
+          "找个奶茶店借充电宝，充到80%才安心",
+          "0%了，但找到一个咖啡店有共享充电宝",
+          "根本没注意到，因为早就充上了"
+        ]
+      },
+      {
+        q: "半夜三点你睡不着，你的脑子里在想？",
+        options: [
+          "我今天做的事别人会怎么看我",
+          "明天吃什么，后天吃什么，这周吃什么",
+          "打开外卖软件，看了半小时什么都没点",
+          "我为什么会在这里，我的未来在哪里"
+        ]
+      }
+    ];
+
+    // 结果数据
+    const results = {
+      "ISTJ": {
+        animal: "🐘",
+        name: "苏门答腊象",
+        alias: "又名：苏门象，野生种群约1,400头，全球最濒危的大象",
+        knowledge: "苏门答腊象每天需要吃150公斤植物，走20-30公里找食物，干活最勤快，吃苦不叫唤，是象群里的老实象。",
+        description: "你是那种周末被叫加班，一个字都不说就去了的人。朋友找你帮忙，你嘴上说"下次吧"，身体已经出门了。快递到了你第一个去拿，会议纪要永远是你在记。牛马界的活化石，牛到快灭绝了都没人知道。",
+        quote: "没事，我来吧。",
+        iucn: "极危CR",
+        count: "≈1,400头"
+      },
+      "ISFJ": {
+        animal: "🐼",
+        name: "大熊猫",
+        alias: "又名：滚滚，野生约1,800只，靠编制活着的顶流",
+        knowledge: "大熊猫每天吃38公斤竹子，剩下时间全在睡觉，野外繁殖能力极低，自己都不想交配，全靠人工干预才能续命。天天被捧着，实际上什么产出都没有。",
+        description: "你是公司里那个永远在帮别人收拾烂摊子的人。别人捅的篓子你补，别人犯的错你背，功劳簿上没你名字，甩锅大会第一个叫你。牛了一辈子，快灭绝了也没人心疼。",
+        quote: "没事没事，不麻烦。",
+        iucn: "易危VU",
+        count: "≈1,800只"
+      },
+      "INFJ": {
+        animal: "🦜",
+        name: "葵花凤头鹦鹉",
+        alias: "又名：白凤头鹦鹉，白羽鹦鹉，野生濒危",
+        knowledge: "葵花鹦鹉一身白毛长得像圣女，但叫声尖锐刺耳，吵到邻居报警。精神世界洁癖，只吃干净食物，高贵到有点神经质，贱起来谁都骂。",
+        description: "你是那种朋友圈发"愿世界温柔以待"，转头就在评论区阴阳怪气的人。嘴上讲格局讲境界，实际上记仇第一名，心里的小本本比任何人都厚。精神洁癖到无法直视，真圣母还是假清高，只有你自己知道。",
+        quote: "我不说，但你应该懂。",
+        iucn: "濒危EN",
+        count: "野生种群下降中"
+      },
+      "INTJ": {
+        animal: "🦅",
+        name: "菲律宾鹰",
+        alias: "又名：食猴鹰，野生约500-800只，地球最稀有猛禽之一",
+        knowledge: "菲律宾鹰站在食物链顶端，俯瞰众生，但繁殖极慢，两年才养大一胎，一辈子也就养三四只。高处不胜寒的孤独感，全靠一张冷漠脸撑着。",
+        description: "你是那种脑子里已经演完了八十集大戏，嘴上"随便吧"的人。什么局都看透了，什么规则都看扁了，但就是不说不表达。同事觉得你高冷，其实你只是懒得解释。独来独往的原因不是社恐，是懒得兼容傻逼。",
+        quote: "这件事有两个问题……算了，懒得说。",
+        iucn: "极危CR",
+        count: "≈500-800只"
+      },
+      "ISTP": {
+        animal: "🦎",
+        name: "阿尔萨斯蜥",
+        alias: "又名：胎生蜥，极危物种",
+        knowledge: "某些极危蜥蜴适应能力极强，能在极端环境里续命，怎么折腾都死不了，但也没什么存在感，就是能活。",
+        description: "你是那种周一到周五都行尸走肉，周五晚上满血复活的人。开会你在神游，KPI你刚好达标，裁员名单里没有你是因为懒得裁。摆烂摆成了一种生活方式，叫"低能耗生存"。怎么踩都踩不死，但你也不想红。",
+        quote: "差不多得了。",
+        iucn: "极危CR",
+        count: "局部种群极少"
+      },
+      "ISFP": {
+        animal: "🦎",
+        name: "变色树蜥",
+        alias: "又名：变色龙，极危物种",
+        knowledge: "变色龙看到什么颜色就变成什么颜色，遇到危险变色求偶也变色，本质是见色忘义的综合体，看见更好看的立刻变心。",
+        description: "你是那种嘴上说"我不看脸"，结果全是前任一个比一个好看的人。立场灵活，三观跟着颜值跑，审美在线但原则下线。精致利己主义爱好者，朋友圈岁月静好，评论区全是意见。",
+        quote: "我是看感觉的，感觉对了就行。",
+        iucn: "极危CR",
+        count: "局部种群极少"
+      },
+      "INFP": {
+        animal: "🦋",
+        name: "帝王斑蝶",
+        alias: "又名：君主斑蝶，濒危物种，越冬数量锐减90%",
+        knowledge: "帝王斑蝶能飞4,000公里迁徙，但每年迷路死掉的比活下来的多。内心戏丰富到可以拍八十集剧，现实里一动不动。",
+        description: "你是那种躺着想"我要改变世界"，第二天还是原样躺的人。计划列了二十条，一条都没执行，但内心觉得自己怀才不遇。内心宇宙超级无敌，现实里连床都下不了。想最多的废物，废物里想得最多的。",
+        quote: "我在想一个很好的idea……等我准备好了再说。",
+        iucn: "濒危EN",
+        count: "越冬数量减少90%"
+      },
+      "INTP": {
+        animal: "🦞",
+        name: "蓝龙虾",
+        alias: "又名：蓝色变异龙虾，基因突变种，300万分之一概率",
+        knowledge: "蓝龙虾基因突变了不起，是自然界最稀有的变异之一，但煮熟了还是红色——NB了半天，一加热全现原形。",
+        description: "你是那种脑子超级好使，但执行力约等于零的人。什么都能看懂，什么都能分析，但就是不动。看了一百遍健身视频，收藏夹吃灰第一。嘴上谈宇宙人生，现实里连被子都不叠。天赋点到最高，勤奋值负数。",
+        quote: "这个我早想到了，就是懒得做。",
+        iucn: "极稀有",
+        count: "300万分之一"
+      },
+      "ESTP": {
+        animal: "🐬",
+        name: "糙齿海豚",
+        alias: "又名：海豚，极危物种，沿海种群岌岌可危",
+        knowledge: "海豚是社交天花板，朋友遍天下，但它们根本不在乎谁是真朋友。社交能力满级，情感深度负分，聊天能聊到对方睡着，自己从来不睡。",
+        description: "你是那种微信置顶五十个群，朋友圈永远第一个评论点赞的人。局王本王，人脉王中王，认识的人比你家WiFi设备还多。但深夜翻遍通讯录，发现没有一个能深夜打电话的。朋友多到手机爆炸，深夜孤独感依然爆表。",
+        quote: "今晚有局吗？人越多越好！",
+        iucn: "极危CR",
+        count: "沿海种群局部不足"
+      },
+      "ESFP": {
+        animal: "🦚",
+        name: "华美极乐鸟",
+        alias: "又名：极乐鸟，求偶舞跳得最好，但濒危到快没了",
+        knowledge: "极乐鸟求偶舞跳得惊天地泣鬼神，但濒危到动物园都懒得养了。华丽到没人看，求偶困难户排行榜永久冠军。",
+        description: "你是那种发自拍修图两小时，发完等评论等到手机发烫的人。天天打扮得花枝招展，朋友圈点赞一百个，约会成功率百分之零。显眼包本包，表演型人格，但观众全跑了还在演。",
+        quote: "你们怎么不给我点赞？",
+        iucn: "濒危EN",
+        count: "下降中"
+      },
+      "ENFP": {
+        animal: "🦜",
+        name: "大葵花鹦鹉",
+        alias: "又名：葵花鹦鹉，极危物种，话多到扰民",
+        knowledge: "葵花鹦鹉是鸟类里的社交恐怖分子，叫声能传三公里，话多到邻居投诉，但依然我行我素，见到人就喊，高兴也叫，不高兴也叫。",
+        description: "你是那种五分钟前刚认识，五分钟后就开始分享你的人生故事的e人。微信列表三千人，全是见过一面加了没聊的。朋友遍天下，知己没一个。社交牛人，情感深度为零。",
+        quote: "我跟你讲，我有个朋友的朋友的同事……",
+        iucn: "极危CR",
+        count: "野外种群稀少"
+      },
+      "ENTP": {
+        animal: "🦅",
+        name: "白头海雕",
+        alias: "又名：白头鹰，美国国鸟，极危物种",
+        knowledge: "白头海雕是鸟类里的辩论冠军，抢夺食物从不失手，空中截杀成功率百分之九十，嘴欠到其他鸟看见它就跑。",
+        description: "你是那种任何话题都能杠，最后吵赢了的 e 人。观点一定要新颖，逻辑一定要清奇，朋友吵架你第一个冲上去"我来给你们评评理"。抬杠是为了抬杠，赢了辩论输了关系，习惯了。",
+        quote: "你说的不对，但我也说不上来哪里不对。",
+        iucn: "极危CR",
+        count: "野外种群稀少"
+      },
+      "ESTJ": {
+        animal: "🦏",
+        name: "爪哇犀牛",
+        alias: "又名：爪哇犀，野生约70头，全球最稀哺乳动物之一",
+        knowledge: "爪哇犀每天干活，农场里最能扛，任劳任怨，从不请假，但农场主不珍惜，快灭绝了还在干活。",
+        description: "你是那种周末被叫加班立刻去，节假日被占开会第一个到的人。卷王本王，卷到同事都怕你。晋升没你事，背锅第一名，功劳是别人的，锅是你的。牛马里的战斗机，累死自己也要卷死别人。",
+        quote: "几点？我马上到。",
+        iucn: "极危CR",
+        count: "≈70头"
+      },
+      "ESFJ": {
+        animal: "🐒",
+        name: "红毛猩猩",
+        alias: "又名：橙猩猩，极危物种",
+        knowledge: "红毛猩猩是灵长类里的舔狗，用舌头表达爱意，舔天舔地舔空气，舔完发现人家根本不领情。社交极度热情，回报率极低。",
+        description: "你是那种朋友发消息秒回，朋友的事比自己的事还上心，朋友失恋你比他先哭的人。天天操心别人的KPI，别人的人生你全包圆，自己的事一塌糊涂。舔到最后，一地鸡毛。",
+        quote: "你今天怎么样？吃了吗？睡得好吗？要不要我帮你……",
+        iucn: "极危CR",
+        count: "野外种群稀少"
+      },
+      "ENFJ": {
+        animal: "🐋",
+        name: "蓝鲸",
+        alias: "又名：蓝鲸，地球最大动物，极危物种",
+        knowledge: "蓝鲸嘴大得能吞下一辆卡车，结果只吃磷虾，温柔到像个没用的巨物。整天唱歌唠嗑，操心整个海洋，实际上就是个话痨温柔的巨婴。",
+        description: "你是那种最爱给人介绍对象，最爱教人做事，最爱说"我这是为你好"的人。爹味十足的温柔控制狂，你的人生你做主？不，是听我的。热心到让人窒息，关心你是因为你得听我的。",
+        quote: "你听我说，你应该这样做……",
+        iucn: "极危CR",
+        count: "≈1-2万头"
+      },
+      "ENTJ": {
+        animal: "🐊",
+        name: "泽鳄",
+        alias: "又名：泽鳄，极危物种，一蹲一整天",
+        knowledge: "泽鳄是爬行类的战略大师，能一动不动蹲一整天等猎物经过，精确计算，爆发出击，咬住就不松口，阴得彻底，等你发现已经被咬了。",
+        description: "你是那种开会不说话，会后一句话把方案翻盘的人。表面岁月静好，暗地全是计算。朋友觉得你佛系，客户觉得你nice，实际上你早就算好了每一步。阴人于无形，赢了还让你觉得是你自己的问题。",
+        quote: "我无所谓，你们定就行。",
+        iucn: "极危CR",
+        count: "局部种群极少"
+      }
+    };
+
+    // 状态
+    let currentQuestion = 0;
+    let answers = [];
+
+    // 开始测试
+    function startQuiz() {
+      document.getElementById('coverPage').style.display = 'none';
+      document.getElementById('quizPage').style.display = 'block';
+      document.getElementById('resultPage').style.display = 'none';
+      currentQuestion = 0;
+      answers = [];
+      showQuestion();
+    }
+
+    // 显示题目
+    function showQuestion() {
+      const q = questions[currentQuestion];
+      document.getElementById('questionText').textContent = `Q${currentQuestion + 1}｜${q.q}`;
+      
+      const container = document.getElementById('optionsContainer');
+      container.innerHTML = '';
+      
+      q.options.forEach((opt, i) => {
+        const btn = document.createElement('button');
+        btn.className = 'option';
+        btn.textContent = `${String.fromCharCode(65 + i)}. ${opt}`;
+        btn.onclick = () => selectOption(i);
+        container.appendChild(btn);
+      });
+
+      updateProgress();
+    }
+
+    // 选择选项
+    function selectOption(index) {
+      answers.push(index);
+      currentQuestion++;
+
+      if (currentQuestion < questions.length) {
+        showQuestion();
+      } else {
+        showResult();
+      }
+    }
+
+    // 更新进度
+    function updateProgress() {
+      const percent = Math.round((currentQuestion + 1) / questions.length * 100);
+      document.getElementById('progressText').textContent = `Q${currentQuestion + 1}/15`;
+      document.getElementById('progressPercent').textContent = `${percent}%`;
+      document.getElementById('progressFill').style.width = `${percent}%`;
+    }
+
+    // 计算结果
+    function calculateResult() {
+      let E = 0, I = 0, S = 0, N = 0, T = 0, F = 0, J = 0, P = 0;
+
+      answers.forEach(a => {
+        // E/I: A,B→E; C,D→I
+        if (a === 0 || a === 1) E++;
+        else I++;
+
+        // S/N: A,B→S; C,D→N
+        if (a === 0 || a === 1) S++;
+        else N++;
+
+        // T/F: A→T, B→F, C→T, D→F
+        if (a === 0 || a === 2) T++;
+        else F++;
+
+        // J/P: A→J, B→P, C→P, D→J
+        if (a === 0 || a === 3) J++;
+        else P++;
+      });
+
+      let type = '';
+      type += E > I ? 'E' : 'I';
+      type += S > N ? 'S' : 'N';
+      type += T > F ? 'T' : 'F';
+      type += J > P ? 'J' : 'P';
+
+      return type;
+    }
+
+    // 显示结果
+    function showResult() {
+      document.getElementById('coverPage').style.display = 'none';
+      document.getElementById('quizPage').style.display = 'none';
+      document.getElementById('resultPage').style.display = 'block';
+
+      const type = calculateResult();
+      const data = results[type];
+
+      document.getElementById('resultAnimal').textContent = data.animal;
+      document.getElementById('resultType').textContent = type;
+      document.getElementById('resultName').textContent = data.name;
+      document.getElementById('resultAlias').textContent = data.alias;
+      document.getElementById('resultKnowledge').textContent = data.knowledge;
+      document.getElementById('resultDescription').textContent = data.description;
+      document.getElementById('resultQuote').textContent = data.quote;
+      document.getElementById('iucnLevel').textContent = data.iucn;
+      document.getElementById('iucnCount').textContent = data.count;
+    }
+
+    // 分享结果
+    function shareResult() {
+      const type = document.getElementById('resultType').textContent;
+      const animal = document.getElementById('resultAnimal').textContent;
+      const name = document.getElementById('resultName').textContent;
+      const desc = document.getElementById('resultDescription').textContent.substring(0, 50) + '...';
+      const quote = document.getElementById('resultQuote').textContent;
+
+      const text = `🦋 我是哪种濒危货？\n\n我的结果是：${type} · ${animal} ${name}\n\n${desc}\n\n经典台词：${quote}\n\n👉 戳链接测试你的濒危货人格！`;
+
+      navigator.clipboard.writeText(text).then(() => {
+        showToast();
+      });
+    }
+
+    // 重试
+    function retryQuiz() {
+      startQuiz();
+    }
+
+    // 显示提示
+    function showToast() {
+      const toast = document.getElementById('toast');
+      toast.classList.add('show');
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 2000);
+    }
+  </script>
+</body>
+</html>
